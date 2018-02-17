@@ -2,5 +2,7 @@
 
 ## Setup
 1. install dependencies ```npm install```
-2. start development server ```npm start```
-3. start server ```node index.js```
+2. start development server:
+    - create and configure .env file (see [.env.example](.env.example))
+    - start the server: ```npm run dev```
+3. start production server ```npm run start```
