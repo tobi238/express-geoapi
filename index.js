@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const turf = require('@turf/turf');
+const shp = require('shpjs');
 
 const h = require('./helpers');
 
@@ -9,6 +10,13 @@ const app = express();
 
 // for parsing application/json
 app.use(bodyParser.json());
+
+// for parsing zip files as binary data
+app.use(bodyParser.raw({
+  type: 'application/zip',
+  inflate: true,
+  limit: '100mb',
+}));
 
 // handling errors
 app.use((err, req, res, next) => {
@@ -22,6 +30,11 @@ app.get('/', (req, res) => {
   return res.send('Homepage!');
 });
 
+
+/* BUFFER
+input: geojson
+output: buffered geojson
+ */
 app.get('/buffer', (req, res) => {
   try {
     const {
@@ -46,6 +59,20 @@ app.get('/buffer', (req, res) => {
     console.log(err);
     return h.logError(res, req, err, 422, 'error while processing data');
   }
+});
+
+/* CONVERT
+input: shapefile
+output: geojson
+ */
+app.post('/convert', (req, res) => {
+  const fileSize = h.fileSize(req.body.byteLength);
+  shp(req.body)
+    .then((geojson) => {
+      h.logSuccess(req, `created geojson from shapefile (${fileSize})`);
+      res.json(geojson);
+    })
+    .catch(err => h.logError(res, req, err, 422, `error while converting shapefile (${fileSize})`));
 });
 
 
