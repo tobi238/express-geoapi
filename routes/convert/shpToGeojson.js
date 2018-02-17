@@ -1,7 +1,11 @@
-const h = require('../helpers');
+const h = require('../../helpers');
 
 const shp = require('shpjs');
 
+/* CONVERT
+input: shapefile, optional: header with Accept-Encoding application-json to get geojson file
+output: geojson
+ */
 module.exports = (req, res) => {
   const fileSize = req.body.byteLength;
   const readableFileSize = h.fileSize(fileSize);
@@ -16,11 +20,11 @@ module.exports = (req, res) => {
   // else zip the response
     const acceptEncoding = req.get('accept-encoding');
     if (acceptEncoding && acceptEncoding === 'application/json') {
-      h.logSuccess(false, req, `created geojson from shapefile (${readableFileSize})`);
+      h.logSuccess(false, req, `created (${readableFileSize})`);
       return res.json(geojson);
     }
     // add to zip file and stream as response
-    h.logSuccess(false, req, `created geojson from shapefile (${readableFileSize}), creating zip archive now...`);
+    h.logSuccess(false, req, `created (${readableFileSize}), bundling zip archive now...`);
     return h.zipResponse(res, 'test', 'geojson', JSON.stringify(geojson));
   }).catch(err => h.logError(res, req, err, 422, `error while converting shapefile (${readableFileSize})`));
 };

@@ -1,6 +1,10 @@
 const turf = require('@turf/turf');
 const h = require('../helpers');
 
+/* BUFFER
+input: geojson
+output: buffered geojson
+ */
 module.exports = (req, res) => {
   try {
     const {

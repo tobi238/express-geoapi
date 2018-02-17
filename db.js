@@ -14,19 +14,17 @@ const con = {
 
 const db = pgp(con);
 
-const connect = () => db.connect()
-  .then((obj) => {
-    console.log('connected to db', obj);
-    obj.done(); // success, release the connection;
-  }).catch(error => console.log('ERROR:', error.message || error));
 
-module.exports.test = async (req, res) => {
+/*
+Test Postgres DB Connection
+ */
+module.exports.test = async (req = false, res = false) => {
   try {
     const data = await db.any('SELECT * FROM test WHERE id=$[id]', {
       id: 1,
     });
-    return h.logSuccess(res, req, 'connection test success');
+    return h.logSuccess(res, req, res ? 'connected to DB' : `connected to postgresql server on ${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME} with user ${process.env.DB_USER}`);
   } catch (err) {
-    return h.logError(res, req, err, 503, 'connection test error');
+    return h.logError(res, req, err, 503, 'DB connection error');
   }
 };

@@ -14,7 +14,7 @@ const h = require('./helpers');
 
 const db = require('./db');
 const buffer = require('./routes/buffer');
-const shpToGeojson = require('./routes/shpToGeojson');
+const shpToGeojson = require('./routes/convert/shpToGeojson');
 
 const app = express();
 
@@ -37,27 +37,15 @@ app.use((err, req, res, next) => {
 
 // HANDLE ROUTES
 
-/*
-Home URL
- */
+/* API Home */
 app.get('/', (req, res) => h.logSuccess(res, req, 'api ready'));
-
-/*
-Test Postgres DB Connection
- */
+/* API available URLs */
 app.get('/db/test', (req, res) => db.test(req, res));
-
-/* BUFFER
-input: geojson
-output: buffered geojson
- */
 app.get('/buffer', (req, res) => buffer(req, res));
+app.post('/convert/shp-to-geojson', (req, res) => shpToGeojson(req, res));
 
-/* CONVERT
-input: shapefile, optional: header with Accept-Encoding application-json to get geojson file
-output: geojson
- */
-app.post('/convert', (req, res) => shpToGeojson(req, res));
+// start server
+app.listen(process.env.PORT, () => console.log(h.FgBlue, `🌍 geoapi is running in ${process.env.NODE_ENV} mode on port ${process.env.PORT}`));
 
-
-app.listen(process.env.PORT, () => console.log(`geoapi is running in ${process.env.NODE_ENV} mode on port ${process.env.PORT}`));
+// test db connection on startup
+db.test();
