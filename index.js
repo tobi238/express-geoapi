@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const turf = require('@turf/turf');
 const shp = require('shpjs');
@@ -15,7 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.raw({
   type: 'application/zip',
   inflate: true,
-  limit: '100mb',
+  limit: '50mb',
 }));
 
 // handling errors
@@ -62,17 +63,30 @@ app.get('/buffer', (req, res) => {
 });
 
 /* CONVERT
-input: shapefile
+input: shapefile, optional: header with Accept-Encoding application-json to get geojson file
 output: geojson
  */
 app.post('/convert', (req, res) => {
-  const fileSize = h.fileSize(req.body.byteLength);
-  shp(req.body)
-    .then((geojson) => {
-      h.logSuccess(req, `created geojson from shapefile (${fileSize})`);
-      res.json(geojson);
-    })
-    .catch(err => h.logError(res, req, err, 422, `error while converting shapefile (${fileSize})`));
+  const fileSize = req.body.byteLength;
+  const readableFileSize = h.fileSize(fileSize);
+  if (fileSize > 5e7) {
+    const errorMessage = `file larger than 50Mb (${readableFileSize})`;
+    return h.logError(res, req, errorMessage, 413, errorMessage);
+  }
+
+  shp(req.body).then((geojson) => {
+    // check header for accept-encoding
+    // only if it is set to json return geojson directly
+    // else zip the response
+    const acceptEncoding = req.get('accept-encoding');
+    if (acceptEncoding && acceptEncoding === 'application/json') {
+      h.logSuccess(req, `created geojson from shapefile (${readableFileSize})`);
+      return res.json(geojson);
+    }
+    // add to zip file and stream as response
+    h.logSuccess(req, `created geojson from shapefile (${readableFileSize}), creating zip archive now...`);
+    return h.zipResponse(res, 'test', 'geojson', JSON.stringify(geojson));
+  }).catch(err => h.logError(res, req, err, 422, `error while converting shapefile (${readableFileSize})`));
 });
 
 
