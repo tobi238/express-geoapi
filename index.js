@@ -14,13 +14,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 require('./auth/passport')(passport);
-const jwt = require('jsonwebtoken');
-const morgan = require('morgan');
+const jwt = require('./auth/jwt');
+const helmet = require('helmet');
+const cors = require('cors');
 
 const User = require('./auth/user');
 
-
 const h = require('./helpers');
+const CustomError = require('./customErrors');
+
 
 const db = require('./db');
 const buffer = require('./routes/buffer');
@@ -30,12 +32,21 @@ const shpToGeojson = require('./routes/convert/shpToGeojson');
 // define express app
 const app = express();
 
-// CORS
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
+// secure headers
+app.use(helmet());
+
+// CORS allow origins
+const whitelist = process.env.ALLOWED_ORIGINS.split(',');
+console.info('CORS allowed origins:', whitelist);
+const corsOptionsDelegate = function (req, callback) {
+  const origin = req.header('Host');
+  if (whitelist.indexOf(origin) !== -1) {
+    callback(null, { origin: true });
+  } else {
+    callback(new CustomError(`origin ${origin} not allowed`, 'origin-not-allowed'), { origin: false });
+  }
+};
+app.use(cors(corsOptionsDelegate));
 
 // for parsing application/json
 app.use(bodyParser.json());
@@ -50,22 +61,29 @@ app.use(bodyParser.raw({
 // passport security
 app.use(passport.initialize());
 
+
 // handling errors
 app.use((err, req, res, next) => {
-  if (err) return h.logError(res, req, err, 400, 'invalid request data');
-  next();
+  // check if it was a CustomError
+  if (err && err.extra) return h.logError(res, req, err, 400, `invalid request (${err.extra})`);
+  if (err) return h.logError(res, req, err, 400, 'invalid request');
 });
-
 
 // HANDLE ROUTES
 
 /* API Home */
 app.get('/', (req, res) => h.logSuccess(res, req, 'api ready'));
 /* API available URLs */
-app.get('/db/test', passport.authenticate('jwt', { session: false }), (req, res) => db.test(req, res));
+app.get('/db/test', passport.authenticate('jwt', { session: false }), (req, res) => {
+  // check if authenticated user has a premium plan
+  User.isPremium(req.user.username)
+    .then(() => db.test(req, res))
+    .catch(err => h.logError(res, req, err.extra, 401, err.message));
+});
 
-app.get('/buffer', (req, res) => buffer(req, res));
-app.post('/convert/shp-to-geojson', (req, res) => shpToGeojson(req, res));
+app.get('/buffer', passport.authenticate('jwt', { session: false }), (req, res) => buffer(req, res));
+app.post('/convert/shp-to-geojson', passport.authenticate('jwt', { session: false }), (req, res) => shpToGeojson(req, res));
+
 
 // passport signup
 app.post('/signup', (req, res) => {
@@ -88,10 +106,7 @@ app.post('/signin', (req, res) => {
       User.comparePassword(req.body.password, user.password).then((isMatch) => {
         if (isMatch) {
           // if user is found and password is right create a token
-          const token = jwt.sign({
-            username: user.username,
-            iss: req.headers.host,
-          }, Buffer.from(process.env.JWT_SECRET, 'base64'), { expiresIn: process.env.JWT_EXP || '1h' });
+          const token = jwt.createToken(req, user);
           // return the information including token as JSON
           res.json({ success: true, token: `${token}` });
         } else {
@@ -100,6 +115,18 @@ app.post('/signin', (req, res) => {
       });
     });
 });
+
+// disallow indexing by bots
+app.get('/robots.txt', (req, res) => {
+  res.set({'Content-Type': 'text/plain'});
+  res.send('User-agent: *\nDisallow: /');
+});
+
+// handling non existing routes
+app.get('*', (req, res) => {
+  res.redirect('/');
+});
+
 
 // start server
 app.listen(process.env.PORT, process.env.HOST_NAME, () => console.log(h.FgBlue, `🌍 geoapi is running in ${process.env.NODE_ENV} mode on ${process.env.HOST_NAME}:${process.env.PORT}`));

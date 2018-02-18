@@ -64,15 +64,3 @@ module.exports.zipResponse = (res, fileName, fileExtension, fileData) => {
   archive.append(fileData, { name: `${fileName}.${fileExtension}` });
   archive.finalize();
 };
-
-
-module.exports.getToken = (headers) => {
-  if (headers && headers.authorization) {
-    const parted = headers.authorization.split(' ');
-    if (parted.length === 2) {
-      return parted[1];
-    }
-    return null;
-  }
-  return null;
-};

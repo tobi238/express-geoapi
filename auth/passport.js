@@ -2,6 +2,7 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 const User = require('./user');
+const h = require('../helpers');
 
 module.exports = function (passport) {
   const opts = {};
@@ -11,7 +12,16 @@ module.exports = function (passport) {
   opts.issuer = `${process.env.HOST_NAME}:${process.env.PORT}`;
   passport.use(new JwtStrategy(opts, ((jwt_payload, done) => {
     User.find(jwt_payload.username).then((user) => {
-      if (user) return done(null, user);
+      if (user) {
+        if(user.plan === jwt_payload.plan) {
+          console.log(h.FgMagenta, `🔓  valid token: username: ${user.username}, plan: ${user.plan}`);
+          return done(null, user);
+        } else {
+          console.log(h.FgYellow, `🔒  invalid token: user '${user.username}' is not in '${user.plan}' plan`);
+          return done(null, false);
+        }
+      }
+      console.log(h.FgYellow, `🔒  invalid token: user '${jwt_payload.username}' does not exist`);
       return done(null, false);
     });
   })));
