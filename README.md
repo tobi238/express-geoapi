@@ -5,4 +5,4 @@
 2. start development server:
     - create and configure .env file (see [.env.example](.env.example))
     - start the server: ```npm run dev```
-3. start production server ```npm run start```
+3. start production server: ```npm run start```

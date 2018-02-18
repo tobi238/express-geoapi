@@ -28,7 +28,7 @@ module.exports.BgCyan = '\x1b[46m';
 module.exports.BgWhite = '\x1b[47m';
 
 module.exports.logError = (res, req, err, status, message) => {
-  console.error(this.FgRed, `❌ ${req.url || ''} ${message}: ${err.message || err}`);
+  console.error(this.FgRed, `❌ ${req.url || ''} ${message}${err ? ':' : ''} ${err.message || err || ''}`);
   return res.status(status).json({
     status: false,
     message,
@@ -63,4 +63,16 @@ module.exports.zipResponse = (res, fileName, fileExtension, fileData) => {
   archive.pipe(res);
   archive.append(fileData, { name: `${fileName}.${fileExtension}` });
   archive.finalize();
+};
+
+
+module.exports.getToken = (headers) => {
+  if (headers && headers.authorization) {
+    const parted = headers.authorization.split(' ');
+    if (parted.length === 2) {
+      return parted[1];
+    }
+    return null;
+  }
+  return null;
 };
