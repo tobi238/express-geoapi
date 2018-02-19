@@ -39,7 +39,7 @@ app.use(helmet());
 const whitelist = process.env.ALLOWED_ORIGINS.split(',');
 console.info('CORS allowed origins:', whitelist);
 const corsOptionsDelegate = function (req, callback) {
-  const origin = req.header('Host');
+  const origin = req.header('Origin');
   if (whitelist.indexOf(origin) !== -1) {
     callback(null, { origin: true });
   } else {
@@ -118,7 +118,7 @@ app.post('/signin', (req, res) => {
 
 // disallow indexing by bots
 app.get('/robots.txt', (req, res) => {
-  res.set({'Content-Type': 'text/plain'});
+  res.set({ 'Content-Type': 'text/plain' });
   res.send('User-agent: *\nDisallow: /');
 });
 

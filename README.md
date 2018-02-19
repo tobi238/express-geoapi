@@ -20,4 +20,4 @@
     }
     ```
     - Use this token in the Header of all API requests: Authorization: Bearer <your_token>
-3. Access API Endpoint of your choice ✌ 
+3. Access API Endpoint of your choice ✌
