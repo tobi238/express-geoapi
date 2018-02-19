@@ -40,7 +40,9 @@ const whitelist = process.env.ALLOWED_ORIGINS.split(',');
 console.info('CORS allowed origins:', whitelist);
 const corsOptionsDelegate = function (req, callback) {
   const origin = req.header('Origin');
-  if (whitelist.indexOf(origin) !== -1) {
+  // check if origin header is set and in whitelist
+  // if it is not set the request was from the samedomain and is allowed
+  if (whitelist.indexOf(origin) !== -1 || !origin) {
     callback(null, { origin: true });
   } else {
     callback(new CustomError(`origin ${origin} not allowed`, 'origin-not-allowed'), { origin: false });

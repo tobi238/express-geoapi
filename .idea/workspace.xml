@@ -4,12 +4,8 @@
     <bookmark url="file://$PROJECT_DIR$/README.md" line="5" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5fb21e00-7da1-4c62-95c4-323d61dc74e8" name="Default" comment=" - added username, plan, iss, expires to jwt token. expires set to 1h.&#10; - added isPremium check to identify premium plan users and allow only them to use specific api endpoints&#10; - added CORS check for allowed origins in .env&#10; - added custom error message class">
-      <change beforePath="$PROJECT_DIR$/.env.example" afterPath="$PROJECT_DIR$/.env.example" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/jsLinters/eslint.xml" afterPath="" />
+    <list default="true" id="5fb21e00-7da1-4c62-95c4-323d61dc74e8" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
       <change beforePath="$PROJECT_DIR$/index.js" afterPath="$PROJECT_DIR$/index.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -27,8 +23,8 @@
       <file leaf-file-name="index.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="44" column="10" lean-forward="true" selection-start-line="44" selection-start-column="10" selection-end-line="44" selection-end-column="10" />
+            <state relative-caret-position="267">
+              <caret line="43" column="72" lean-forward="false" selection-start-line="43" selection-start-column="72" selection-end-line="43" selection-end-column="72" />
               <folding />
             </state>
           </provider>
@@ -68,7 +64,7 @@
         <entry file="file://$PROJECT_DIR$/geoapi.sql">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="531">
-              <caret line="98" column="0" lean-forward="true" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
+              <caret line="98" column="0" lean-forward="false" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -334,7 +330,7 @@
       <workItem from="1518901282307" duration="30575000" />
       <workItem from="1518958565743" duration="17627000" />
       <workItem from="1518980753546" duration="1411000" />
-      <workItem from="1519059500487" duration="832000" />
+      <workItem from="1519059500487" duration="2081000" />
     </task>
     <task id="LOCAL-00001" summary="updated docs and .idea config">
       <created>1518882803245</created>
@@ -371,11 +367,18 @@
       <option name="project" value="LOCAL" />
       <updated>1518976258335</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="fix cors allowed origins">
+      <created>1519060379940</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1519060379940</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="84205000" />
+    <option name="totallyTimeSpent" value="85454000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1186" extended-state="6" />
@@ -421,7 +424,8 @@
     <MESSAGE value="✨ nicer console log and json responses, testing the db connection on startup" />
     <MESSAGE value=" added authorization bearer jwt via passport.js" />
     <MESSAGE value=" - added username, plan, iss, expires to jwt token. expires set to 1h.&#10; - added isPremium check to identify premium plan users and allow only them to use specific api endpoints&#10; - added CORS check for allowed origins in .env&#10; - added custom error message class" />
-    <option name="LAST_COMMIT_MESSAGE" value=" - added username, plan, iss, expires to jwt token. expires set to 1h.&#10; - added isPremium check to identify premium plan users and allow only them to use specific api endpoints&#10; - added CORS check for allowed origins in .env&#10; - added custom error message class" />
+    <MESSAGE value="fix cors allowed origins" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix cors allowed origins" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -743,15 +747,15 @@
     <entry file="file://$PROJECT_DIR$/geoapi.sql">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="531">
-          <caret line="98" column="0" lean-forward="true" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
+          <caret line="98" column="0" lean-forward="false" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="44" column="10" lean-forward="true" selection-start-line="44" selection-start-column="10" selection-end-line="44" selection-end-column="10" />
+        <state relative-caret-position="267">
+          <caret line="43" column="72" lean-forward="false" selection-start-line="43" selection-start-column="72" selection-end-line="43" selection-end-column="72" />
           <folding />
         </state>
       </provider>
