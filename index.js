@@ -73,18 +73,49 @@ app.use((err, req, res, next) => {
 
 // HANDLE ROUTES
 
+// set restricted routes, only available with a premium plan
+const premiumUrls = ['/db/test'];
+
+// check if...
+// 1. token is present
+// 2. token is valid
+// 3. requested route is a premium url
+// 4. user has matching plan for the requested route
+const isAuthenticated = (req, res, next) => {
+  // check if user is authenticated
+  passport.authenticate('jwt', { session: false }, (err, user, info) => {
+    // check if token exists and is valid
+    if(!user) {
+      if(info.message === 'No auth token') return h.logError(res, req, info, 401, 'no authentication token found, authentication is required for this route');
+      else if(info.message === 'invalid token') return h.logError(res, req, info, 401, 'invalid authentication token found, authentication is required for this route');
+    }
+
+    // check if route is restricted to premium users
+    if(premiumUrls.indexOf(req.url) !== -1) {
+      // check if user has premium plan and is allowed to access this route
+      User.isPremium(user.username)
+        .then(() => {
+          console.log(h.FgMagenta, `👑 ${req.url} is a premium route, user has premium plan ✅`);
+          next();
+          //db.test(req, res);
+        })
+        .catch(err => {
+          console.log(h.FgRed, `👑 ${req.url} is a premium route, but user '${user.username}' is on free plan`);
+          h.logError(res, req, false, 401, err.message);
+        });
+    } else next();
+  })(req, res, next);
+};
+
 /* API Home */
 app.get('/', (req, res) => h.logSuccess(res, req, 'api ready'));
 /* API available URLs */
-app.get('/db/test', passport.authenticate('jwt', { session: false }), (req, res) => {
-  // check if authenticated user has a premium plan
-  User.isPremium(req.user.username)
-    .then(() => db.test(req, res))
-    .catch(err => h.logError(res, req, err.extra, 401, err.message));
+app.get('/db/test', isAuthenticated, (req, res) => {
+  db.test(req, res);
 });
 
-app.get('/buffer', passport.authenticate('jwt', { session: false }), (req, res) => buffer(req, res));
-app.post('/convert/shp-to-geojson', passport.authenticate('jwt', { session: false }), (req, res) => shpToGeojson(req, res));
+app.get('/buffer', isAuthenticated, (req, res) => buffer(req, res));
+app.post('/convert/shp-to-geojson', isAuthenticated, (req, res) => shpToGeojson(req, res));
 
 
 // passport signup

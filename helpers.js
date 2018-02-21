@@ -28,7 +28,7 @@ module.exports.BgCyan = '\x1b[46m';
 module.exports.BgWhite = '\x1b[47m';
 
 module.exports.logError = (res, req, err, status, message) => {
-  console.error(this.FgRed, `❌ ${req.url || ''} ${message}${err ? ':' : ''} ${err.message || err || ''}`);
+  if(err) console.error(this.FgRed, `❌ ${req.url || ''} ${message}${err ? ':' : ''} ${err.message || err || ''}`);
   return res.status(status).json({
     status: false,
     message,
