@@ -1,4 +1,4 @@
-# NodeJS based Express Server for Geospatial Data Processing
+# NodeJS Server for Geospatial Data Processing
 
 ## Setup
 1. install dependencies ```npm install```
