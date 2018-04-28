@@ -45,7 +45,9 @@ const corsOptionsDelegate = function (req, callback) {
   if (whitelist.indexOf(origin) !== -1 || !origin) {
     callback(null, { origin: true });
   } else {
-    callback(new CustomError(`origin ${origin} not allowed`, 'origin-not-allowed'), { origin: false });
+    callback(new CustomError(`origin ${origin} not allowed`, 'origin-not-allowed'), {
+      origin: false,
+    });
   }
 };
 app.use(cors(corsOptionsDelegate));
@@ -83,26 +85,25 @@ const premiumUrls = ['/db/test'];
 // 4. user has matching plan for the requested route
 const isAuthenticated = (req, res, next) => {
   // check if user is authenticated
-  passport.authenticate('jwt', { session: false }, (err, user, info) => {
+  passport.authenticate('jwt', {
+    session: false,
+  }, (err, user, info) => {
     // check if token exists and is valid
-    if(!user) {
-      if(info.message === 'No auth token') return h.logError(res, req, info, 401, 'no authentication token found, authentication is required for this route');
-      else if(info.message === 'invalid token') return h.logError(res, req, info, 401, 'invalid authentication token found, authentication is required for this route');
+    if (!user) {
+      if (info.message === 'No auth token') return h.logError(res, req, info, 401, 'no authentication token found, authentication is required for this route');
+      else if (info.message === 'invalid token') return h.logError(res, req, info, 401, 'invalid authentication token found, authentication is required for this route');
     }
 
     // check if route is restricted to premium users
-    if(premiumUrls.indexOf(req.url) !== -1) {
+    if (premiumUrls.indexOf(req.url) !== -1) {
       // check if user has premium plan and is allowed to access this route
-      User.isPremium(user.username)
-        .then(() => {
-          console.log(h.FgMagenta, `👑 ${req.url} is a premium route, user has premium plan ✅`);
-          next();
-          //db.test(req, res);
-        })
-        .catch(err => {
-          console.log(h.FgRed, `👑 ${req.url} is a premium route, but user '${user.username}' is on free plan`);
-          h.logError(res, req, false, 401, err.message);
-        });
+      if (user.plan === 'premium') {
+        console.log(h.FgMagenta, `👑 ${req.url} is a premium route, user has premium plan ✅`);
+        next();
+      } else {
+        console.log(h.FgRed, `👑 ${req.url} is a premium route, but user '${user.username}' is on free plan`);
+        return h.logError(res, req, info, 401, 'invalid authentication token found, this route is a only available with a premium plan');
+      }
     } else next();
   })(req, res, next);
 };
@@ -141,9 +142,15 @@ app.post('/signin', (req, res) => {
           // if user is found and password is right create a token
           const token = jwt.createToken(req, user);
           // return the information including token as JSON
-          res.json({ success: true, token: `${token}` });
+          res.json({
+            success: true,
+            token: `${token}`,
+          });
         } else {
-          res.status(401).send({ success: false, msg: 'Authentication failed. Wrong password.' });
+          res.status(401).send({
+            success: false,
+            msg: 'Authentication failed. Wrong password.',
+          });
         }
       });
     });
@@ -151,7 +158,9 @@ app.post('/signin', (req, res) => {
 
 // disallow indexing by bots
 app.get('/robots.txt', (req, res) => {
-  res.set({ 'Content-Type': 'text/plain' });
+  res.set({
+    'Content-Type': 'text/plain',
+  });
   res.send('User-agent: *\nDisallow: /');
 });
 
