@@ -2,6 +2,8 @@
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/tobi238/express-geoapi.svg)](https://greenkeeper.io/)
 
+![Build](https://travis-ci.org/tobi238/express-geoapi.svg?branch=master)
+
 ## Setup
 1. install dependencies ```npm install```
 2. Install PostgreSQL DB Server and make sure psql command is available
