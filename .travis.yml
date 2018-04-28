@@ -6,8 +6,8 @@ branches:
    only:
       - master
 
-before_install:
-  - npm i
+install:
+  - npm install
 cache:
   directories:
     - "node_modules"
