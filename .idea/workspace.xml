@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="5fb21e00-7da1-4c62-95c4-323d61dc74e8" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/.travis.yml" afterPath="$PROJECT_DIR$/.travis.yml" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -304,7 +303,7 @@
       <workItem from="1519137901585" duration="599000" />
       <workItem from="1519231072400" duration="7226000" />
       <workItem from="1519739499346" duration="1821000" />
-      <workItem from="1524912024725" duration="899000" />
+      <workItem from="1524912024725" duration="905000" />
     </task>
     <task id="LOCAL-00001" summary="updated docs and .idea config">
       <created>1518882803245</created>
@@ -369,11 +368,18 @@
       <option name="project" value="LOCAL" />
       <updated>1524912785833</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Add Continuous Integration using the Travis CI">
+      <created>1524912927054</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1524912927054</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="96014000" />
+    <option name="totallyTimeSpent" value="96020000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-3851" y="-11" width="3862" height="2136" extended-state="6" />
