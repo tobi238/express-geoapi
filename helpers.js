@@ -28,7 +28,12 @@ module.exports.BgCyan = '\x1b[46m';
 module.exports.BgWhite = '\x1b[47m';
 
 module.exports.logError = (res, req, err, status, message) => {
-  if(err) console.error(this.FgRed, `❌ ${req.url || ''} ${message}${err ? ':' : ''} ${err.message || err || ''}`);
+  if (err) {
+    console.error(
+      this.FgRed,
+      `❌ ${req.url || ''} ${message}${err ? ':' : ''} ${err.message || err || ''}`,
+    );
+  }
   return res.status(status).json({
     status: false,
     message,
@@ -45,8 +50,10 @@ module.exports.logSuccess = (res, req, message) => {
   }
 };
 
-module.exports.fileSize = (a, b, c, d, e) => `${(b = Math, c = b.log, d = 1e3, e = c(a) / c(d) | 0, a / b.pow(d, e)).toFixed(2)} ${e ? `${'kMGTPEZY'[--e]}B` : 'Bytes'}`;
-
+module.exports.fileSize = (a, b, c, d, e) =>
+  `${((b = Math), (c = b.log), (d = 1e3), (e = (c(a) / c(d)) | 0), a / b.pow(d, e)).toFixed(2)} ${
+    e ? `${'kMGTPEZY'[--e]}B` : 'Bytes'
+  }`;
 
 module.exports.zipResponse = (res, fileName, fileExtension, fileData) => {
   const archive = archiver('zip');
@@ -56,7 +63,11 @@ module.exports.zipResponse = (res, fileName, fileExtension, fileData) => {
     res.status(500).send({ error: err.message });
   });
   // archive created
-  archive.on('close', () => res.status(200).send('OK').end());
+  archive.on('close', () =>
+    res
+      .status(200)
+      .send('OK')
+      .end());
 
   // stream data to archive
   res.attachment(`${fileName}.zip`);

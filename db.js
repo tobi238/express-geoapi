@@ -22,7 +22,15 @@ module.exports.test = async (req = false, res = false) => {
     const data = await this.con.any('SELECT * FROM test WHERE id=$[id]', {
       id: 1,
     });
-    return h.logSuccess(res, req, res ? 'connected to DB' : `connected to postgresql server on ${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME} with user ${process.env.DB_USER}`);
+    return h.logSuccess(
+      res,
+      req,
+      res
+        ? 'connected to DB'
+        : `connected to postgresql server on ${process.env.DB_HOST}:${process.env.DB_PORT}/${
+          process.env.DB_NAME
+        } with user ${process.env.DB_USER}`,
+    );
   } catch (err) {
     return h.logError(res, req, err, 503, 'DB connection error');
   }

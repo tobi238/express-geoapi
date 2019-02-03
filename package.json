@@ -13,6 +13,9 @@
     "url": "https://github.com/tobi238/express-geoapi"
   },
   "scripts": {
+    "db:create_container": "docker run --name express-geoapi-db -p 5432:5432 -e POSTGRES_PASSWORD=password -d mdillon/postgis",
+    "db:seed": "docker cp geoapi.sql express-geoapi-db:/geoapi.sql && docker exec -it express-geoapi-db psql -U postgres -d postgres -f geoapi.sql -h localhost",
+    "db:psql": "docker exec -it express-geoapi-db psql -U postgres -d postgres",
     "dev": "nodemon index.js",
     "start": "node index.js"
   },

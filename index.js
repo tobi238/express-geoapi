@@ -23,11 +23,9 @@ const User = require('./auth/user');
 const h = require('./helpers');
 const CustomError = require('./customErrors');
 
-
 const db = require('./db');
 const buffer = require('./routes/buffer');
 const shpToGeojson = require('./routes/convert/shpToGeojson');
-
 
 // define express app
 const app = express();
@@ -65,7 +63,6 @@ app.use(bodyParser.raw({
 // passport security
 app.use(passport.initialize());
 
-
 // handling errors
 app.use((err, req, res, next) => {
   // check if it was a CustomError
@@ -85,27 +82,55 @@ const premiumUrls = ['/db/test'];
 // 4. user has matching plan for the requested route
 const isAuthenticated = (req, res, next) => {
   // check if user is authenticated
-  passport.authenticate('jwt', {
-    session: false,
-  }, (err, user, info) => {
-    // check if token exists and is valid
-    if (!user) {
-      if (info.message === 'No auth token') return h.logError(res, req, info, 401, 'no authentication token found, authentication is required for this route');
-      else if (info.message === 'invalid token') return h.logError(res, req, info, 401, 'invalid authentication token found, authentication is required for this route');
-    }
-
-    // check if route is restricted to premium users
-    if (premiumUrls.indexOf(req.url) !== -1) {
-      // check if user has premium plan and is allowed to access this route
-      if (user.plan === 'premium') {
-        console.log(h.FgMagenta, `👑 ${req.url} is a premium route, user has premium plan ✅`);
-        next();
-      } else {
-        console.log(h.FgRed, `👑 ${req.url} is a premium route, but user '${user.username}' is on free plan`);
-        return h.logError(res, req, info, 401, 'invalid authentication token found, this route is a only available with a premium plan');
+  passport.authenticate(
+    'jwt',
+    {
+      session: false,
+    },
+    (err, user, info) => {
+      // check if token exists and is valid
+      if (!user) {
+        if (info.message === 'No auth token') {
+          return h.logError(
+            res,
+            req,
+            info,
+            401,
+            'no authentication token found, authentication is required for this route',
+          );
+        } else if (info.message === 'invalid token') {
+          return h.logError(
+            res,
+            req,
+            info,
+            401,
+            'invalid authentication token found, authentication is required for this route',
+          );
+        }
       }
-    } else next();
-  })(req, res, next);
+
+      // check if route is restricted to premium users
+      if (premiumUrls.indexOf(req.url) !== -1) {
+        // check if user has premium plan and is allowed to access this route
+        if (user.plan === 'premium') {
+          console.log(h.FgMagenta, `👑 ${req.url} is a premium route, user has premium plan ✅`);
+          next();
+        } else {
+          console.log(
+            h.FgRed,
+            `👑 ${req.url} is a premium route, but user '${user.username}' is on free plan`,
+          );
+          return h.logError(
+            res,
+            req,
+            info,
+            401,
+            'invalid authentication token found, this route is a only available with a premium plan',
+          );
+        }
+      } else next();
+    },
+  )(req, res, next);
 };
 
 /* API Home */
@@ -118,11 +143,16 @@ app.get('/db/test', isAuthenticated, (req, res) => {
 app.get('/buffer', isAuthenticated, (req, res) => buffer(req, res));
 app.post('/convert/shp-to-geojson', isAuthenticated, (req, res) => shpToGeojson(req, res));
 
-
 // passport signup
 app.post('/signup', (req, res) => {
   if (!req.body.username || !req.body.password) {
-    h.logError(res, req, `username: ${req.body.username || 'missing'}, password: ${req.body.password || 'missing'}`, 401, 'please pass username and password');
+    h.logError(
+      res,
+      req,
+      `username: ${req.body.username || 'missing'}, password: ${req.body.password || 'missing'}`,
+      401,
+      'please pass username and password',
+    );
   } else {
     // save the user
     User.create(req.body.username, req.body.password)
@@ -133,27 +163,26 @@ app.post('/signup', (req, res) => {
 
 // passport signin
 app.post('/signin', (req, res) => {
-  User.find(req.body.username)
-    .then((user) => {
-      if (!user) return h.logError(res, req, false, 401, `user '${req.body.username}' not found`);
-      // check if password matches
-      User.comparePassword(req.body.password, user.password).then((isMatch) => {
-        if (isMatch) {
-          // if user is found and password is right create a token
-          const token = jwt.createToken(req, user);
-          // return the information including token as JSON
-          res.json({
-            success: true,
-            token: `${token}`,
-          });
-        } else {
-          res.status(401).send({
-            success: false,
-            msg: 'Authentication failed. Wrong password.',
-          });
-        }
-      });
+  User.find(req.body.username).then((user) => {
+    if (!user) return h.logError(res, req, false, 401, `user '${req.body.username}' not found`);
+    // check if password matches
+    User.comparePassword(req.body.password, user.password).then((isMatch) => {
+      if (isMatch) {
+        // if user is found and password is right create a token
+        const token = jwt.createToken(req, user);
+        // return the information including token as JSON
+        res.json({
+          success: true,
+          token: `${token}`,
+        });
+      } else {
+        res.status(401).send({
+          success: false,
+          msg: 'Authentication failed. Wrong password.',
+        });
+      }
     });
+  });
 });
 
 // disallow indexing by bots
@@ -169,9 +198,16 @@ app.get('*', (req, res) => {
   res.redirect('/');
 });
 
-
 // start server
-app.listen(process.env.PORT, process.env.HOST_NAME, () => console.log(h.FgBlue, `🌍 geoapi is running in ${process.env.NODE_ENV} mode on ${process.env.HOST_NAME}:${process.env.PORT}`));
+app.listen(process.env.PORT, process.env.HOST_NAME, () =>
+  console.log(
+    h.FgBlue,
+    `🌍 geoapi is running in ${process.env.NODE_ENV} mode on ${process.env.HOST_NAME}:${
+      process.env.PORT
+    }`,
+  ));
 
 // test db connection on startup
-db.test().then(() => {}).catch(() => {});
+db.test()
+  .then(() => {})
+  .catch(() => {});

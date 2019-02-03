@@ -7,10 +7,7 @@ output: buffered geojson
  */
 module.exports = (req, res) => {
   try {
-    const {
-      geojson,
-      radius = 100,
-    } = req.body;
+    const { geojson, radius = 100 } = req.body;
 
     // set default options
     const options = {
@@ -23,7 +20,11 @@ module.exports = (req, res) => {
 
     const bufferedGeojson = turf.buffer(geojson, radius, options);
 
-    h.logSuccess(false, req, `created with radius ${radius} ${options.units} and ${options.steps} steps`);
+    h.logSuccess(
+      false,
+      req,
+      `created with radius ${radius} ${options.units} and ${options.steps} steps`,
+    );
     return res.json(bufferedGeojson);
   } catch (err) {
     return h.logError(res, req, err, 422, 'error while processing data');
